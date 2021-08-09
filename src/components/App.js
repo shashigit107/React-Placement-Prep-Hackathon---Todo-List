@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
  
 
-const Todo = () => {
+const App = () => {
 
   const [task, setTask] = useState("");
 
@@ -206,4 +206,4 @@ const Todo = () => {
 
  
 
-export default Todo;
+export default App;
