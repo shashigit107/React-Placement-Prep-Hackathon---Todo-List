@@ -1,66 +1,209 @@
-import { useState } from 'react';
-import './App.css';
+import React, { useState } from "react";
 
-function App() {
-  const[input,setInput]=useState("");
-  const[quarterfinal,setQuarterfinal]=useState([]);
-  const[editingid,setEditingId]=useState(null);
-  const[editingValue,setEditingValue]=useState("");
+
  
-  const addHandler=()=>{
-    const newVariable={
-      id:new Date().getTime(),
-      text: input
-    } 
-    setQuarterfinal([...quarterfinal, newVariable]);
-    console.log(newVariable)
-    setInput("");
-  }
-  const deleteHandler=(id)=>{
-    const upadte=[...quarterfinal].filter((para)=>{
-      return para.id!==id;
-    })
-    setQuarterfinal(upadte);
-  }
-  const editSubmitHandler=(id)=>{
-    const updatevalue=[...quarterfinal].map((para)=>{
-      if(para.id===id){
-        para.text=editingValue;
-      }
-      return para;
-    })
-    //console.log(updatevalue)
-    setQuarterfinal(updatevalue);
-    console.log(quarterfinal)
-    setEditingId(null);
-  }
+
+const Todo = () => {
+
+  const [task, setTask] = useState("");
+
+  const [todos, setTodos] = useState([]);
+
+  const [taskCount, setTaskCount] = useState(0);
+
+
+ 
+
+  const findIndexOfItemInList = (id) => {
+
+    const editItem = todos.find((item) => item.id === id);
+
+    return [todos.indexOf(editItem), editItem];
+
+  };
+
+
+ 
+
+  const handleValueChange = (e, updateId) => {
+
+    const [index, editItem] = findIndexOfItemInList(updateId);
+
+    todos.splice(index, 1, {
+
+      ...editItem,
+
+      value: e.target.value,
+
+    });
+
+    setTodos([...todos]);
+
+  };
+
+
+ 
+
+  const editTodo = (id, editValue) => {
+
+    const [index, editItem] = findIndexOfItemInList(id);
+
+    todos.splice(index, 1, {
+
+      ...editItem,
+
+      editing: editValue,
+
+    });
+
+    setTodos([...todos]);
+
+  };
+
+
+ 
+
+  const addTodo = (e) => {
+
+    e.preventDefault();
+
+    if (task.trim() !== "") {
+
+      setTaskCount((prevValue) => prevValue + 1);
+
+      setTodos((prevValue) => [
+
+        ...prevValue,
+
+        { value: task, id: taskCount, editing: false },
+
+      ]);
+
+      setTask("");
+
+    }
+
+  };
+
+
+ 
+
+  const deleteTodo = (id) => {
+
+    const [index] = findIndexOfItemInList(id);
+
+    todos.splice(index, 1);
+
+    setTodos([...todos]);
+
+  };
+
+
+ 
+
   return (
-    <div className="App">
-      <input id="task" value={input} onChange={(e)=>setInput(e.target.value)}></input>
-     <button id="btn" onClick={addHandler}> Add </button>
-     {/* {console.log("return")} */}
 
-     {quarterfinal.map((para)=>{
-       return (
-         <>
-         
-         <div key={para.id}>
-           {editingid===para.id
-           ?(<input id="task" onChange={(e)=>setEditingValue(e.target.value)}/> )
-           :(<li className="list">{para.text}</li>)}
-            {editingid===para.id
-            ?(<button type="submit" onClick={()=>editSubmitHandler(para.id)}>EDIT SUBMIT</button>)
-          :(<button className="edit" onClick={()=>setEditingId(para.id)}> EDIT </button>)}
-            
-            <button className="delete" onClick={()=>deleteHandler(para.id)}> DELETE </button>
-            
+    <div>
 
-         </div>
-         </>
-       )
-     })}
+      <form>
+
+        <textarea
+
+          id="task"
+
+          value={task}
+
+          onChange={(e) => setTask(e.target.value)}
+
+        ></textarea>
+
+        <button id="btn" type="submit" onClick={(e) => addTodo(e)}>
+
+          Add task
+
+        </button>
+
+      </form>
+
+      <ul>
+
+        {todos.map((item) => (
+
+          <li className="list" key={item.id}>
+
+            {item.value}
+
+            {!item.editing && (
+
+              <div>
+
+                <button
+
+                  onClick={() => editTodo(item.id, true)}
+
+                  className="edit"
+
+                >
+
+                  Edit
+
+                </button>
+
+                <button onClick={() => deleteTodo(item.id)} className="delete">
+
+                  Delete
+
+                </button>
+
+              </div>
+
+            )}
+
+            {item.editing && (
+
+              <div>
+
+                <textarea
+
+                  onChange={(e) => handleValueChange(e, item.id)}
+
+                  value={item.value}
+
+                  className="editTask"
+
+                ></textarea>
+
+                <button
+
+                  disabled={item.value.trim() === ""}
+
+                  className="saveTask"
+
+                  onClick={() => editTodo(item.id, false)}
+
+                >
+
+                  Save task
+
+                </button>
+
+              </div>
+
+            )}
+
+          </li>
+
+        ))}
+
+      </ul>
+
     </div>
-  );
-}
 
-export default App;
+  );
+
+};
+
+
+ 
+
+export default Todo;
